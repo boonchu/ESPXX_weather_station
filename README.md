@@ -1,6 +1,9 @@
 ### Weather Station ###
 
+![weather station gif](https://github.com/boonchu/ESPXX_weather_station/blob/master/Weather%20Station.gif)
+
 * Features:
+	- Current date and time with NTP sync
 	- one week forcast local weather in your area
 	- display the actual temperature and humidy in your working area
 
@@ -12,19 +15,24 @@ I extract only actual example code from 'squix78/esp8266-weather-station' to run
 
 * Parts:
 	- ESP8266 12E
-	- Arudino IDE software
 	- DHT11 or DHT22 integrated temperature and humidity sensors
 	- Graphical OLED SSD1306 128 by 64 pixels
+
+* Softwares:
+	- Arudino IDE software
+	- Fritzing software
 
 * Preparing steps:
 	- read schemeatic and put parts together with connecting wires
 	- use USB cable to connect your PC
+	- register yourself to retrieve the API key from https://www.wunderground.com/weather/api
 	- checkout this code from github
 	- run Arduino IDE
 	- Open file 'WeatherStationDemoExtendedDST.ino'
 	- change your WIFI ID and Password for first name that connect to internet
 	- tab to settings.h file to adjust setting values (note: I use South East Asia region setting)
 	- required setting changes: (local city name, localized langauge code, NTP servers, etc)
+	- required setting for forcasting data: replace value in WUNDERGRROUND_API_KEY
 
 * Schematic:
 
