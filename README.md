@@ -5,7 +5,8 @@
 * Features:
 	- Current date and time with NTP sync
 	- one week forcast local weather in your area
-	- display the actual temperature and humidy in your working area
+	- display the indoor temperature and humidity
+	- display the outdoor temperature and humidity (part two with outdoor sensor)
 
 * Note: find the original project idea from this link https://github.com/squix78/esp8266-weather-station
 
