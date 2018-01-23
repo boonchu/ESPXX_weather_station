@@ -39,7 +39,13 @@ I extract only actual example code from 'squix78/esp8266-weather-station' to run
 
 ![alt text](https://github.com/boonchu/ESPXX_weather_station/blob/master/Weather%20Station%20Schematic.png)
 
-DHT sensor  | ESP8266 12E
+##### !attention! #####
+```
+Consult pin layouts from manufacturers. Table below is *ONLY* sample pin that use for my unit.
+I have not responsible for any mistake.
+```
+
+DHT11 sensor  | ESP8266 12E
 ------------- | -------------
 pin 1 data | pin D6 - GPIO
 pin 2 vcc  | pin 3v3
