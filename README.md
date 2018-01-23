@@ -41,9 +41,9 @@ I extract only actual example code from 'squix78/esp8266-weather-station' to run
 
 DHT sensor  | ESP8266 12E
 ------------- | -------------
-pin 1 | pin D6
-vcc   | 3v3 pin
-GND   | GND pin
+pin 1 data | pin D6 - GPIO
+pin 2 vcc  | pin 3v3
+pin 3 GND  | pin GND
 
 SSD1306 OLED | ESP8266 12E
 ------------- | -------------
