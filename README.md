@@ -1,4 +1,4 @@
-### Weather Station ###
+### Weather Station (SSD1306 OLED display) ###
 
 ![weather station gif](https://github.com/boonchu/ESPXX_weather_station/blob/master/Weather%20Station.gif)
 
@@ -8,7 +8,9 @@
 	- display the indoor temperature and humidity
 	- display the outdoor temperature and humidity (part two with outdoor sensor)
 
-* Note: find the original project idea from this link https://github.com/squix78/esp8266-weather-station
+* Note: find the original project idea from this link
+	- https://github.com/squix78/esp8266-weather-station
+	- https://blog.squix.org/2015/12/esp8266-weather-station-measuring-2.html
 
 * Note: When you want to get basic understanding about SSD1306 OLED display device, this link will help https://github.com/squix78/esp8266-oled-ssd1306
 
