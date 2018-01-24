@@ -26,20 +26,21 @@ I extract only actual example code from 'squix78/esp8266-weather-station' to run
 	- Fritzing software
 
 * Preparing steps:
-	- read schemeatic and put parts together with connecting wires
-	- use USB cable to connect your PC
-	- register yourself to retrieve the API key from https://www.wunderground.com/weather/api
-	- checkout this code from github
+	- reads schemeatic and put parts together with connecting wires
+	- uses USB cable to connect your PC
+	- registers yourself to retrieve the API key from https://www.wunderground.com/weather/api
+	- use git checkout the code from github
 	- run Arduino IDE
 	- Open file 'WeatherStationDemoExtendedDST.ino'
-	- change your WIFI ID and Password for first line that connect to internet
+	- change your WIFI ID and Password for first time that connect to internet 
+	- tab to settings.h file to adjust setting values (note: I use South East Asia region setting)
+	- require settings for forcasting data: replace value in WUNDERGRROUND_API_KEY
+	- require settings change: (local city name, localized langauge code, NTP servers, etc)
+	- loads code from arduino IDE to ESP unit
 ```
 139   // Manual Wifi
 140   // WiFi.begin(SSID, PASSWORD);
 ```
-	- tab to settings.h file to adjust setting values (note: I use South East Asia region setting)
-	- required setting for forcasting data: replace value in WUNDERGRROUND_API_KEY
-	- required setting changes: (local city name, localized langauge code, NTP servers, etc)
 ```
 119 // use thingspeak to register your key
 120 const String WUNDERGRROUND_API_KEY = "register your key here";
