@@ -32,10 +32,22 @@ I extract only actual example code from 'squix78/esp8266-weather-station' to run
 	- checkout this code from github
 	- run Arduino IDE
 	- Open file 'WeatherStationDemoExtendedDST.ino'
-	- change your WIFI ID and Password for first name that connect to internet
+	- change your WIFI ID and Password for first line that connect to internet
+```
+139   // Manual Wifi
+140   // WiFi.begin(SSID, PASSWORD);
+```
 	- tab to settings.h file to adjust setting values (note: I use South East Asia region setting)
-	- required setting changes: (local city name, localized langauge code, NTP servers, etc)
 	- required setting for forcasting data: replace value in WUNDERGRROUND_API_KEY
+	- required setting changes: (local city name, localized langauge code, NTP servers, etc)
+```
+119 // use thingspeak to register your key
+120 const String WUNDERGRROUND_API_KEY = "register your key here";
+121 // update your location⋅
+122 const String WUNDERGRROUND_LANGUAGE = "EN";
+123 const String WUNDERGROUND_COUNTRY = "TH";
+124 const String WUNDERGROUND_CITY = "Bangkok";
+```
 
 * Schematic:
 
