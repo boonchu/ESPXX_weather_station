@@ -52,7 +52,7 @@ See more at http://blog.squix.ch
 #define HOSTNAME "IoT-device-"
 
 // Setup
-const int UPDATE_INTERVAL_SECS = 10 * 60; // Update every 10 minutes
+const int UPDATE_INTERVAL_SECS = 2*60; // Update every 2 minutes
 
 // >>> Uncomment one of the following 2 lines to define which OLED display interface type you are using
 //#define spiOLED
@@ -116,15 +116,20 @@ struct dstRule EndRule = {"ICT", Last, Sun, Jan, 1, 0};  // Indochina Time = UTC
 
 // Wunderground Settings
 const boolean IS_METRIC = true;
-const String WUNDERGRROUND_API_KEY = "register your key";
+// use thingspeak to register your key
+const String WUNDERGRROUND_API_KEY = "register your key here";
+// update your location 
 const String WUNDERGRROUND_LANGUAGE = "EN";
 const String WUNDERGROUND_COUNTRY = "TH";
 const String WUNDERGROUND_CITY = "Bangkok";
 #endif
 
 //Thingspeak Settings
-const String THINGSPEAK_CHANNEL_ID = "67284";
-const String THINGSPEAK_API_READ_KEY = "L2VIW20QVNZJBLAK";
+// testing thingspeak reading out from API
+// https://api.thingspeak.com/channels/409552/feeds.json?api_key=TLMQEP66VPYJNESE&results=2
+// note if you intend to use this value, the device will retrieve my data.
+const String THINGSPEAK_CHANNEL_ID = "409552";
+const String THINGSPEAK_API_READ_KEY = "TLMQEP66VPYJNESE";
 
 #ifdef spiOLED
   SSD1306Spi display(OLED_RESET, OLED_DC, OLED_CS);  // SPI OLED

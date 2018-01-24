@@ -92,7 +92,6 @@ void drawIndoor(OLEDDisplay *display, OLEDDisplayUiState* state, int16_t x, int1
 void drawThingspeak(OLEDDisplay *display, OLEDDisplayUiState* state, int16_t x, int16_t y);
 void drawForecastDetails(OLEDDisplay *display, int x, int y, int dayIndex);
 void drawHeaderOverlay(OLEDDisplay *display, OLEDDisplayUiState* state);
-void setReadyForWeatherUpdate();
 int8_t getWifiQuality();
 
 
@@ -182,10 +181,12 @@ void setup() {
   ArduinoOTA.onProgress(drawOtaProgress);
   ArduinoOTA.begin();
 
+  // updateDHT();
   updateData(&display);
-
-  ticker.attach(UPDATE_INTERVAL_SECS, setReadyForWeatherUpdate);
-  ticker.attach(60, setReadyForDHTUpdate);
+  // ticker.attach(UPDATE_INTERVAL_SECS, setReadyForWeatherUpdate);
+  // ticker.attach(60, setReadyForDHTUpdate);
+  // use one ticker to update weather every 2 minutes
+  ticker.attach(120, setReadyForWeatherUpdate);
 }
 
 void loop() {
@@ -250,27 +251,52 @@ void updateData(OLEDDisplay *display) {
   drawProgress(display, 50, "Updating forecasts...");
   wunderground.updateForecast(WUNDERGRROUND_API_KEY, WUNDERGRROUND_LANGUAGE, WUNDERGROUND_COUNTRY, WUNDERGROUND_CITY);
 
+  // Serial.println("Calling updateData()...");
   drawProgress(display, 70, "Updating DHT Sensor");
   humidity = dht.readHumidity();
   drawProgress(display, 80, "Updating DHT Sensor");
   temperature = dht.readTemperature(!IS_METRIC);
-
-  Serial.println(humidity);
-  Serial.println(temperature);
-  delay(500);
+  // check if returns are valid, if they are NaN (not a number) then something went wrong!
+  if (isnan(temperature) || isnan(humidity)) {
+    Serial.println("Failed to read from DHT");
+  } else {
+    Serial.print("Indoor Humidity: "); 
+    Serial.print(humidity);
+    Serial.print(" %\t");
+    Serial.print("Indoor Temperature: "); 
+    Serial.print(temperature);
+    Serial.println(" *C");
+  }  
+  //delay(500);
 
   drawProgress(display, 90, "Updating thingspeak...");
   thingspeak.getLastChannelItem(THINGSPEAK_CHANNEL_ID, THINGSPEAK_API_READ_KEY);
+  Serial.print("Outdoor Humidity: "); 
+  Serial.print(thingspeak.getFieldValue(1));
+  Serial.print(" %\t");
+  Serial.print("Outdoor Temperature: "); 
+  Serial.print(thingspeak.getFieldValue(0));
+  Serial.println(" *C"); 
   readyForWeatherUpdate = false;
   drawProgress(display, 100, "Done...");
-  delay(1000);
+  delay(500);
 }
 
 // Called every 1 minute
 void updateDHT() {
   humidity = dht.readHumidity();
   temperature = dht.readTemperature(!IS_METRIC);
-
+  // check if returns are valid, if they are NaN (not a number) then something went wrong!
+  if (isnan(temperature) || isnan(humidity)) {
+    Serial.println("Failed to read from DHT");
+  }  else {
+    Serial.print("Indoor Humidity: "); 
+    Serial.print(humidity);
+    Serial.print(" %\t");
+    Serial.print("Indoor Temperature: "); 
+    Serial.print(temperature);
+    Serial.println(" *C");
+  }   
   readyForDHTUpdate = false;
 }
 
@@ -431,7 +457,7 @@ int8_t getWifiQuality() {
 }
 
 void setReadyForWeatherUpdate() {
-  Serial.println("Setting readyForUpdate to true");
+  Serial.println("Setting readyForWeatherUpdate to true");
   readyForWeatherUpdate = true;
 }
 
