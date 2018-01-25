@@ -6,7 +6,7 @@
 	- Current date and time with NTP sync
 	- one week forcast local weather in your area
 	- display the indoor temperature and humidity
-	- display the outdoor temperature and humidity (part two with outdoor sensor)
+	- display the outdoor temperature and humidity ![part two with thingspeak outdoor sensor](https://github.com/boonchu/ESPXX_weather_logger)
 
 * Note: find the original project idea from this link
 	- https://github.com/squix78/esp8266-weather-station
