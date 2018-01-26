@@ -49,6 +49,26 @@ I extract only actual example code from 'squix78/esp8266-weather-station' to run
 123 const String WUNDERGROUND_COUNTRY = "TH";
 124 const String WUNDERGROUND_CITY = "Bangkok";
 ```
+```
+// *** warning ***
+// I received this warning message from wunderground and 2 minutes interval exceeds the traffic limits.⋅
+// I recommended to use > 2 minutes to avoid to lost your own account and system lock you out.
+//
+//
+// Your wunderground API key (XXXXXXXX) exceeded its allotted usage today by making 503 calls
+// in a day but the limit is 500. We used one of your raindrops instead of disabling the key for the⋅
+// remainder of the day. You now have 3 remaining raindrops.
+```
+```
+// *** warning ***
+// I received this warning message from wunderground and 2 minutes interval exceeds the traffic limits.⋅
+// I recommended to use > 2 minutes to avoid to lost your own account and system lock you out.
+//
+//
+// Your wunderground API key (XXXXXXXX) exceeded its allotted usage today by making 503 calls
+// in a day but the limit is 500. We used one of your raindrops instead of disabling the key for the⋅
+// remainder of the day. You now have 3 remaining raindrops.
+```
 
 * Schematic:
 
