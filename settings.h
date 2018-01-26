@@ -51,8 +51,16 @@ See more at http://blog.squix.ch
 
 #define HOSTNAME "IoT-device-"
 
-// Setup
-const int UPDATE_INTERVAL_SECS = 2*60; // Update every 2 minutes
+// Setup interval for update
+// *** warning ***
+// I received this warning message from wunderground and 2 minutes interval exceeds the traffic limits. 
+// I recommended to use > 2 minutes to avoid to lost your own account and system lock you out.
+//
+//
+// Your wunderground API key (XXXXXXXX) exceeded its allotted usage today by making 503 calls
+// in a day but the limit is 500. We used one of your raindrops instead of disabling the key for the 
+// remainder of the day. You now have 3 remaining raindrops.
+const int UPDATE_INTERVAL_SECS = 3*60; // Update every 3 minutes
 
 // >>> Uncomment one of the following 2 lines to define which OLED display interface type you are using
 //#define spiOLED
@@ -116,9 +124,7 @@ struct dstRule EndRule = {"ICT", Last, Sun, Jan, 1, 0};  // Indochina Time = UTC
 
 // Wunderground Settings
 const boolean IS_METRIC = true;
-// use thingspeak to register your key
-const String WUNDERGRROUND_API_KEY = "register your key here";
-// update your location 
+const String WUNDERGRROUND_API_KEY = "8be40cc9fbf7c8bf";
 const String WUNDERGRROUND_LANGUAGE = "EN";
 const String WUNDERGROUND_COUNTRY = "TH";
 const String WUNDERGROUND_CITY = "Bangkok";
@@ -128,8 +134,14 @@ const String WUNDERGROUND_CITY = "Bangkok";
 // testing thingspeak reading out from API
 // https://api.thingspeak.com/channels/409552/feeds.json?api_key=TLMQEP66VPYJNESE&results=2
 // note if you intend to use this value, the device will retrieve my data.
-const String THINGSPEAK_CHANNEL_ID = "409552";
-const String THINGSPEAK_API_READ_KEY = "TLMQEP66VPYJNESE";
+const char* host = "api.thingspeak.com";
+const String THINGSPEAK_OUTDOOR_CHANNEL_ID = "409552";
+const String THINGSPEAK_API_OUTDOOR_READ_KEY = "TLMQEP66VPYJNESE";
+const String THINGSPEAK_API_OUTDOOR_WRITE_KEY = "3RNS8P07KQZUOHHO";
+
+const String THINGSPEAK_INDOOR_CHANNEL_ID = "411929";
+const String THINGSPEAK_API_INDOOR_READ_KEY = "OOKJ9ZHGTQTPCE0R";
+const String THINGSPEAK_API_INDOOR_WRITE_KEY = "W9AER3QHXSPQDKQP";
 
 #ifdef spiOLED
   SSD1306Spi display(OLED_RESET, OLED_DC, OLED_CS);  // SPI OLED

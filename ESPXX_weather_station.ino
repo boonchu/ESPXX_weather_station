@@ -65,8 +65,10 @@ WundergroundClient wunderground(IS_METRIC);
 
 // Initialize the temperature/ humidity sensor
 DHT dht(DHTPIN, DHTTYPE);
-float humidity = 0.0;
-float temperature = 0.0;
+float indoor_humidity = 0.0;
+float indoor_temperature = 0.0;
+float outdoor_humidity = 0.0;
+float outdoor_temperature = 0.0;
 
 ThingspeakClient thingspeak;
 
@@ -74,6 +76,8 @@ ThingspeakClient thingspeak;
 bool readyForWeatherUpdate = false;
 // flag changed in the ticker function every 1 minute
 bool readyForDHTUpdate = false;
+// update indoor to thingspeak
+bool updateIndoor = true;
 
 String lastUpdate = "--";
 
@@ -185,8 +189,8 @@ void setup() {
   updateData(&display);
   // ticker.attach(UPDATE_INTERVAL_SECS, setReadyForWeatherUpdate);
   // ticker.attach(60, setReadyForDHTUpdate);
-  // use one ticker to update weather every 2 minutes
-  ticker.attach(120, setReadyForWeatherUpdate);
+  // use one ticker to update weather every X minutes
+  ticker.attach(UPDATE_INTERVAL_SECS, setReadyForWeatherUpdate);
 }
 
 void loop() {
@@ -251,32 +255,47 @@ void updateData(OLEDDisplay *display) {
   drawProgress(display, 50, "Updating forecasts...");
   wunderground.updateForecast(WUNDERGRROUND_API_KEY, WUNDERGRROUND_LANGUAGE, WUNDERGROUND_COUNTRY, WUNDERGROUND_CITY);
 
-  // Serial.println("Calling updateData()...");
-  drawProgress(display, 70, "Updating DHT Sensor");
-  humidity = dht.readHumidity();
-  drawProgress(display, 80, "Updating DHT Sensor");
-  temperature = dht.readTemperature(!IS_METRIC);
+  drawProgress(display, 70, "Reading DHT Indoor Sensor");
+  indoor_humidity = dht.readHumidity();
+  indoor_temperature = dht.readTemperature(!IS_METRIC);
   // check if returns are valid, if they are NaN (not a number) then something went wrong!
-  if (isnan(temperature) || isnan(humidity)) {
+  int count=0;
+  while (isnan(indoor_temperature) || isnan(indoor_humidity)) {
+    if (count > 25) {
+      Serial.println("Attempt to retry to read DHT, but no data from indoor DHT");
+      break;
+    }
+    // Serial.println("Calling updateData()...");
+    indoor_humidity = dht.readHumidity();
+    indoor_temperature = dht.readTemperature(!IS_METRIC);
     Serial.println("Failed to read from DHT");
-  } else {
-    Serial.print("Indoor Humidity: "); 
-    Serial.print(humidity);
-    Serial.print(" %\t");
-    Serial.print("Indoor Temperature: "); 
-    Serial.print(temperature);
-    Serial.println(" *C");
-  }  
-  //delay(500);
+    count++;
+  }
 
-  drawProgress(display, 90, "Updating thingspeak...");
-  thingspeak.getLastChannelItem(THINGSPEAK_CHANNEL_ID, THINGSPEAK_API_READ_KEY);
-  Serial.print("Outdoor Humidity: "); 
-  Serial.print(thingspeak.getFieldValue(1));
+  drawProgress(display, 70, "Reading DHT Outdoor Sensor");
+  thingspeak.getLastChannelItem(THINGSPEAK_OUTDOOR_CHANNEL_ID, THINGSPEAK_API_OUTDOOR_READ_KEY);
+  outdoor_temperature = thingspeak.getFieldValue(0).toFloat();
+  outdoor_humidity = thingspeak.getFieldValue(1).toFloat();
+
+  Serial.print("Indoor Humidity: "); 
+  Serial.print(indoor_humidity);
+  Serial.print(" %\t");
+  Serial.print("Indoor Temperature: "); 
+  Serial.print(indoor_temperature);
+  Serial.println(" *C");
+
+  Serial.print("Outdoor Humidity: ");
+  Serial.print(outdoor_humidity);
   Serial.print(" %\t");
   Serial.print("Outdoor Temperature: "); 
-  Serial.print(thingspeak.getFieldValue(0));
+  Serial.print(outdoor_temperature);
   Serial.println(" *C"); 
+
+  drawProgress(display, 70, "Updating Sensor data to ThingSpeak");
+  if (updateIndoor) {
+    updateIndoorToThingSpeak();
+  }  
+  
   readyForWeatherUpdate = false;
   drawProgress(display, 100, "Done...");
   delay(500);
@@ -284,17 +303,17 @@ void updateData(OLEDDisplay *display) {
 
 // Called every 1 minute
 void updateDHT() {
-  humidity = dht.readHumidity();
-  temperature = dht.readTemperature(!IS_METRIC);
+  indoor_humidity = dht.readHumidity();
+  indoor_temperature = dht.readTemperature(!IS_METRIC);
   // check if returns are valid, if they are NaN (not a number) then something went wrong!
-  if (isnan(temperature) || isnan(humidity)) {
+  if (isnan(indoor_temperature) || isnan(indoor_humidity)) {
     Serial.println("Failed to read from DHT");
   }  else {
     Serial.print("Indoor Humidity: "); 
-    Serial.print(humidity);
+    Serial.print(indoor_humidity);
     Serial.print(" %\t");
     Serial.print("Indoor Temperature: "); 
-    Serial.print(temperature);
+    Serial.print(indoor_temperature);
     Serial.println(" *C");
   }   
   readyForDHTUpdate = false;
@@ -370,11 +389,11 @@ void drawForecast2(OLEDDisplay *display, OLEDDisplayUiState* state, int16_t x, i
 void drawIndoor(OLEDDisplay *display, OLEDDisplayUiState* state, int16_t x, int16_t y) {
   display->setTextAlignment(TEXT_ALIGN_CENTER);
   display->setFont(ArialMT_Plain_10);
-  display->drawString(64 + x, 0, DHTTEXT " Indoor Sensor" );
+  display->drawString(64 + x, 0, DHTTEXT " Indoor Weather" );
   display->setFont(ArialMT_Plain_16);
-  dtostrf(temperature,4, 1, FormattedTemperature);
+  dtostrf(indoor_temperature,4, 1, FormattedTemperature);
   display->drawString(64+x, 12, "Temp: " + String(FormattedTemperature) + (IS_METRIC ? "°C": "°F"));
-  dtostrf(humidity,4, 1, FormattedHumidity);
+  dtostrf(indoor_humidity,4, 1, FormattedHumidity);
   display->drawString(64+x, 30, "Humidity: " + String(FormattedHumidity) + "%");
 
 }
@@ -382,7 +401,7 @@ void drawIndoor(OLEDDisplay *display, OLEDDisplayUiState* state, int16_t x, int1
 void drawThingspeak(OLEDDisplay *display, OLEDDisplayUiState* state, int16_t x, int16_t y) {
   display->setTextAlignment(TEXT_ALIGN_CENTER);
   display->setFont(ArialMT_Plain_10);
-  display->drawString(64 + x, 0 + y, "Thingspeak Sensor");
+  display->drawString(64 + x, 0 + y, "  Outdoor Weather");
   display->setFont(ArialMT_Plain_16);
   display->drawString(64 + x, 12 + y, thingspeak.getFieldValue(0) + "°C");
   // display->drawString(64 + x, 12 + y, thingspeak.getFieldValue(0) + (IS_METRIC ? "°C": "°F"));  // Needs code to convert Thingspeak temperature string
@@ -465,3 +484,47 @@ void setReadyForDHTUpdate() {
   Serial.println("Setting readyForDHTUpdate to true");
   readyForDHTUpdate = true;
 }
+
+void updateIndoorToThingSpeak() {
+  if (isnan(indoor_temperature) || isnan(indoor_humidity)) {
+    Serial.println("Found NaN data from sensors, quit!");
+    return;
+  }
+  // Use WiFiClient class to create TCP connections
+  WiFiClient client;
+  const int httpPort = 80;
+  if (!client.connect(host, httpPort)) {
+    Serial.println("connection failed");
+    return;
+  }
+  
+  // We now create a URI for the request
+  String url = "/update?api_key=";
+  url += THINGSPEAK_API_INDOOR_WRITE_KEY;
+  url += "&field1=";
+  url += String(indoor_temperature);
+  url += "&field2=";
+  url += String(indoor_humidity);  
+    
+  Serial.print("Requesting URL: ");
+  Serial.println(url);
+    
+  // This will send the request to the server
+  client.print(String("GET ") + url + " HTTP/1.1\r\n" +
+      "Host: " + host + "\r\n" + 
+      "Connection: close\r\n\r\n");
+  delay(10);
+  while(!client.available()){
+    delay(100);
+    Serial.print(".");
+  }
+  // Read all the lines of the reply from server and print them to Serial
+  while(client.available()){
+    String line = client.readStringUntil('\r');
+    Serial.print(line);
+  }
+    
+  Serial.println();
+  Serial.println("closing connection");
+}
+
